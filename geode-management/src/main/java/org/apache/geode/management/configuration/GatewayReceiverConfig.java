@@ -17,20 +17,9 @@ package org.apache.geode.management.configuration;
 
 import java.util.List;
 
-import org.apache.geode.cache.configuration.AbstractCacheElement;
+import org.apache.geode.cache.configuration.CacheElement;
 
-public class GatewayReceiverConfig extends AbstractCacheElement implements RuntimeCacheElement {
-  /*
-    TODO#1: Not all CacheElements need to implement RuntimeCacheElement. RuntimeCacheElements have .getGroups.
-    If we remove the usage .getGroups from LocatorClusterManagerService's list method into a helper method
-    that some *ConfigManagers (RegionConfigManager, MemberConfigManager etc) can use, then we can remove
-    GatewayReceiverConfig's implementation of RuntimeCacheElement.
-     */
-  @Override
-  public List<String> getGroups() {
-    return null;
-  }
-
+public class GatewayReceiverConfig extends CacheElement{
   @Override
   public String getId() {
     return null;
