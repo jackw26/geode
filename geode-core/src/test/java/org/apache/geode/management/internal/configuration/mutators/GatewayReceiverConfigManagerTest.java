@@ -22,6 +22,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.geode.distributed.DistributedMember;
@@ -45,7 +46,7 @@ public class GatewayReceiverConfigManagerTest {
 
   @Before
   public void setUp() throws Exception {
-    cache = mock(InternalCache.class);
+  cache = mock(InternalCache.class);
     gatewayReceiverConfigManager = spy(GatewayReceiverConfigManager.class);
     mockGatewayReceiverConfig = mock(GatewayReceiverConfig.class);
     mockCacheConfig = mock(CacheConfig.class);
@@ -80,6 +81,22 @@ public class GatewayReceiverConfigManagerTest {
 //    assertThat(gateways).isEmpty();
 //
 //  }
+
+  @Test
+  public void cacheHasNoGatewayReceivers() {
+//    List<?>
+//        gateways =
+//        gatewayReceiverConfigManager.list(new GatewayReceiverConfig(), mockCacheConfig);
+//    assertThat(gateways).isEmpty();
+//    DistributedSystemMXBean distributedSystemMXBean = mock(DistributedSystemMXBean.class);
+    DistributedMember distributedMember = mock(DistributedMember.class);
+    Set<DistributedMember> distributedMembers = new HashSet();
+    distributedMembers.add(distributedMember);44
+    GatewayReceiverConfig gatewayReceiverConfig = new GatewayReceiverConfig();
+    doReturn(distributedMembers).when(gatewayReceiverConfigManager).getDistributedMembers(gatewayReceiverConfig);
+    assertThat(gatewayReceiverConfigManager.list(gatewayReceiverConfig, mockCacheConfig).size()).isEqualTo(0);
+  }
+
 
   @Test
   public void testGetGatewayReceiverMXBeans() {

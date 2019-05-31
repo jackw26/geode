@@ -17,14 +17,18 @@ package org.apache.geode.management.internal.configuration.mutators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.management.ObjectName;
 
+import com.sun.xml.bind.v2.TODO;
 import org.apache.commons.lang3.NotImplementedException;
 
 import org.apache.geode.annotations.VisibleForTesting;
 import org.apache.geode.cache.configuration.CacheConfig;
 import org.apache.geode.distributed.DistributedMember;
+import org.apache.geode.distributed.internal.membership.InternalDistributedMember;
 import org.apache.geode.internal.cache.InternalCache;
 import org.apache.geode.management.DistributedSystemMXBean;
 import org.apache.geode.management.GatewayReceiverMXBean;
@@ -63,15 +67,29 @@ public class GatewayReceiverConfigManager implements ConfigurationManager<Gatewa
   @Override
   public List<GatewayReceiverConfig> list(GatewayReceiverConfig filterConfig,
                                            CacheConfig existing) {
-
-    //TODO / Open Question: What object does Geode use to represent information about GWR?
-    // This will impact the type of return object for ths method
-
     // Get gatewayreceiverbeans
-//    List<GatewayReceiverMXBean> GatewayReceiverMXBeans = getGatewayReceiverMXBeans();
+//    DistributedSystemMXBean dMXbean = this.getSystemManagementService().getDistributedSystemMXBean();
+//
+//    List<GatewayReceiverMXBean> GatewayReceiverMXBeans = getGatewayReceiverMXBeans(dMXbean, ?)//List<DistributedMember> members);
     // Transform gatewayreceiver beans into RuntimeGatewayReceiverConfig
-
+//    return existing.getGatewayReceiver().
+    Set<DistributedMember> distributedMembers = getDistributedMembers(filterConfig);
     return null;
+  }
+
+ //TODO: we stole this from memberconfigmanager we should find a way to make it available for both.
+  @VisibleForTesting
+  Set<DistributedMember> getDistributedMembers(GatewayReceiverConfig filter) {
+    Set<InternalDistributedMember> distributionManagerIds =
+            cache.getDistributionManager().getDistributionManagerIds();
+    if (filter.getId() != null) {
+      distributionManagerIds = distributionManagerIds.stream().filter(
+              internalDistributedMember -> (filter.getId().equals(internalDistributedMember.getName())))
+              .collect(Collectors.toSet());
+    }
+
+    return distributionManagerIds.stream()
+            .map(DistributedMember.class::cast).collect(Collectors.toSet());
   }
 
   @VisibleForTesting

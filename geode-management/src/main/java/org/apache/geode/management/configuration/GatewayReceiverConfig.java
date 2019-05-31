@@ -22,6 +22,7 @@ import org.apache.geode.cache.configuration.CacheElement;
 public class GatewayReceiverConfig extends CacheElement{
   @Override
   public String getId() {
-    return null;
+    return "";
   }
+  //TODO: We should think about what the gatewayReceiver actual should do (this is a hacky solution)
 }
