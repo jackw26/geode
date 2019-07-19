@@ -15,45 +15,40 @@
 
 package org.apache.geode.management.api;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class RestApiCommand {
-  private String action;
-  private String target;
-  private Map<String, String> paramaters;
+  private String commandName;
+  private Map<String, String> parameters = new HashMap<>();
 
   public RestApiCommand() {}
 
-  public RestApiCommand(String action, String target, Map<String, String> parameters) {
-    this.action = action;
-    this.target = target;
-    this.paramaters = parameters;
+  public RestApiCommand(String commandName, Map<String, String> parameters) {
+    this.commandName = commandName;
+    this.parameters = parameters;
   }
 
-  public String getAction() {
-    return action;
+  public String getCommandName() {
+    return commandName;
   }
 
-  public RestApiCommand setAction(String action) {
-    this.action = action;
-    return this;
-  }
-
-  public String getTarget() {
-    return target;
-  }
-
-  public RestApiCommand setTarget(String target) {
-    this.target = target;
+  public RestApiCommand setCommandName(String commandName) {
+    this.commandName = commandName;
     return this;
   }
 
   public Map<String, String> getParamaters() {
-    return paramaters;
+    return parameters;
   }
 
   public RestApiCommand setParamaters(Map<String, String> paramaters) {
-    this.paramaters = paramaters;
+    this.parameters = paramaters;
     return this;
+  }
+
+  public RestApiCommand addParameter(String key, String value) {
+    this.parameters.put(key, value);
+    return  this;
   }
 }

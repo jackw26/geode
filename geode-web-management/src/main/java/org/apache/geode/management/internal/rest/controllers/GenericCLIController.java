@@ -17,74 +17,69 @@ package org.apache.geode.management.internal.rest.controllers;
 
 import static org.apache.geode.management.internal.rest.controllers.AbstractManagementController.MANAGEMENT_API_VERSION;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Set;
 
+import javax.naming.ldap.Control;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.dao.ReflectionSaltSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import sun.reflect.Reflection;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
+import org.apache.geode.management.api.ClusterManagementResult;
 import org.apache.geode.management.api.RestApiCommand;
 
 @Controller("cli")
 @RequestMapping(MANAGEMENT_API_VERSION)
 public class GenericCLIController extends AbstractManagementController{
-  private static List<String> controllerNames;
 
-  static {
-    controllerNames = Collections.emptyList();
-    controllerNames.add("org.apache.geode.management.internal.rest.controllers.GatewayMangementController");
-    controllerNames.add("org.apache.geode.management.internal.rest.controllers.MemberManagementController");
-    controllerNames.add("org.apache.geode.management.internal.rest.controllers.PdxManagementController");
-    controllerNames.add("org.apache.geode.management.internal.rest.controllers.PingManagementController");
-    controllerNames.add("org.apache.geode.management.internal.rest.controllers.RegionManagementController");
+
+
+  private static Map<String, String> commandToUrls = new HashMap<String, String>(){{
+    put("list region", "/v2/regions");
+    put("create region", "/v2/regions");
+  }};
+
+  @RequestMapping(method = RequestMethod.GET, value = "/cli" )
+  public String get(@RequestParam String command, HttpServletRequest request) {
+
+    String viewName = "forward:" + commandToUrls.get(command);
+    return viewName;
   }
 
-//  String regex = "(?<=\\p{Ll})(?=\\p{Lu})";
-//    System.out.printf("%s -> %s%n", text, Arrays.toString(text.split(regex)));
-  {
+  @RequestMapping(method = RequestMethod.POST, value = "/cli" )
+  public String post(@RequestParam String command, HttpServletRequest request) {
 
+    String viewName = "forward:" + commandToUrls.get(command);
+    return viewName;
   }
 
-  @PreAuthorize("@securityService.authorize('CLUSTER', 'READ')")
-  @RequestMapping(method = RequestMethod.POST, value = "/cli/command" )
-  public ResponseEntity<?> command(@RequestBody(required = true) RestApiCommand restApiCommand) {
-//    MemberManagementController memberManagementController = new MemberManagementController();
-//    return memberManagementController.listMembers(null, null);
-    Method method = mapRequest(restApiCommand);
-    try {
-      return (ResponseEntity<?>)method.invoke("id");
-    } catch (IllegalAccessException | InvocationTargetException e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  @RequestMapping(method = RequestMethod.DELETE, value = "/cli" )
+  public String delete(@RequestParam String command, HttpServletRequest request) {
+
+    String viewName = "forward:" + commandToUrls.get(command);
+    return viewName;
   }
 
-  private Method mapRequest(RestApiCommand restApiCommand){
-    return null;
-  }
-
-  private Map<String, Method> mapMethods() {
-    List<Method> methodList = controllerNames.stream().map(c -> {
-      try {
-        return Class.forName(c);
-      } catch (ClassNotFoundException ignored) {
-        return Void.class;
-      }
-    }).flatMap(c -> Stream.of(c.getMethods())).collect(Collectors.toList());
-    return null;
-  }
 }
 
 
